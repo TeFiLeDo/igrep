@@ -28,6 +28,7 @@ pub enum Editor {
     Goland,
     Pycharm,
     Less,
+    Fresh,
 }
 
 #[derive(Debug)]
@@ -110,6 +111,7 @@ impl EditorCommand {
                 Editor::Goland => "goland",
                 Editor::Pycharm => "pycharm",
                 Editor::Less => "less",
+                Editor::Fresh => "fresh",
             },
             EditorCommand::Custom(program, _) => program,
         }
@@ -132,7 +134,7 @@ impl EditorCommand {
                 Editor::Emacs | Editor::Emacsclient => Box::new(
                     ["-nw".into(), format!("+{line_number}"), file_name.into()].into_iter(),
                 ),
-                Editor::Hx | Editor::Helix | Editor::Subl | Editor::SublimeText => {
+                Editor::Hx | Editor::Helix | Editor::Subl | Editor::SublimeText | Editor::Fresh => {
                     Box::new([format!("{file_name}:{line_number}")].into_iter())
                 }
                 Editor::Intellij | Editor::Goland | Editor::Pycharm => Box::new(
@@ -264,6 +266,7 @@ mod tests {
     #[test_case(Editor::Goland => format!("goland --line {LINE_NUMBER} {FILE_NAME}"); "goland command")]
     #[test_case(Editor::Pycharm => format!("pycharm --line {LINE_NUMBER} {FILE_NAME}"); "pycharm command")]
     #[test_case(Editor::Less => format!("less +{LINE_NUMBER} {FILE_NAME}"); "less command")]
+    #[test_case(Editor::Fresh => format!("fresh {FILE_NAME}:{LINE_NUMBER}"); "fresh command")]
     fn builtin_editor_command(editor: Editor) -> String {
         let editor_command = EditorCommand::new(None, Some(editor)).unwrap();
         format!(
